@@ -31,7 +31,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          D:\SonarCloud\SonarScanner\SonarScanner.MSBuild.exe begin /k:"MyWebApplication" /n:"MyWebApplication" /d:sonar.login="29d6e2cdf2f1707dc7eeef9fd7a8097f0c0bc1be" /d:sonar.host.url="http://localhost:8585/"
+          D:\SonarCloud\SonarScanner\SonarScanner.MSBuild.exe begin /k:"MyWebApplication" /n:"MyWebApplication" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
 
       - name: Build Solution
         run: |
@@ -41,7 +41,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe /t:Rebuild
+          MSBuild.exe Rebuild MyWebApplication.sln
           
       - name: SonarQube End
         env:
