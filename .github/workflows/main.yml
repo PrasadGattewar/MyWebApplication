@@ -42,7 +42,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           shell: powershell
         run: |
-          D:\SonarCloud\SonarScanner\SonarScanner.MSBuild.exe build MyWebApplication.sln
+           msbuild.exe build MyWebApplication.sln
           
       - name: SonarQube End
         env:
