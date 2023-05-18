@@ -55,3 +55,9 @@ jobs:
         with:
           name: MyWebApplication
           path: "./_build"
+
+      - name: Deploy to IIS
+        run: |
+            iisreset /stop
+            Copy-Item ./MyWebApplication/* C:/inetpub/wwwroot/dotnetcore-webapp -Recurse -Force
+            iisreset /start
