@@ -1,41 +1,66 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP app to Azure Web App - GitHubApplication
+name: MyWebApplication
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ "main"]
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: ./MyWebApplication
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup MSBuild path
-        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
       - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1.0.5
+        uses: NuGet/setup-nuget@v1.0.2
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
-      - name: Restore NuGet packages
-        run: nuget restore
+      - name: Restore Packages
+        run: nuget restore MyWebApplication.sln
 
-      - name: Publish to folder
-        run: msbuild /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
+      - name: SonarQube Begin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          D:\SonarCloud\SonarScanner\SonarScanner.MSBuild.exe begin /k:"MyWebApplication" /n:"MyWebApplication" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
+      - name: Build Solution
+        run: |
+          msbuild.exe MyWebApplication.sln /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release" /p:PublishUrl="../_build"
+
+      - name: ReBuild Solution
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          shell: powershell
+        run: |
+           msbuild.exe MyWebApplication.sln
+          
+      - name: SonarQube End
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          D:\SonarCloud\SonarScanner\SonarScanner.MSBuild.exe end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+     
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1.0.0
         with:
-          name: ASP-app
-          path: '/published/**'
+          name: MyWebApplication
+          path: "./_build"
 
   deploy:
-    runs-on: windows-latest
+    runs-on: self-hosted
     needs: build
     environment:
       name: 'Production'
@@ -43,9 +68,9 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v1.0.0
         with:
-          name: ASP-app
+          name: MyWebApplication
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
