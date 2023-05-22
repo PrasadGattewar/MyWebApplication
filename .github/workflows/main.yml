@@ -68,6 +68,12 @@ jobs:
         uses: actions/download-artifact@v1.0.0
         with:
           name: MyWebApplication
+          
+      - name: 'Azure PowerShell login with subscription'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
