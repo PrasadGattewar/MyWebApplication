@@ -53,6 +53,15 @@ jobs:
         run: |
           msbuild.exe MyWebApplication.sln /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release" /p:PublishUrl="../_build"
 
+      - name: Run tests
+        uses: EasyDesk/action-dotnet-test@v1.0.0
+        with:
+          # test-args: '--logger "trx;LogFileName=test_results.trx" --collect:"XPlat Code Coverage"'
+          build-configuration: 'Release'
+          path: msbuild.exe MyWebApplication.sln # Adjust this to the path of your test project
+          skip-build: false
+        
+          
       # Build the Solution using the MSBuild for SonarQube Analysis
       - name: ReBuild Solution
         env:
@@ -62,12 +71,12 @@ jobs:
         run: |
            msbuild.exe MyWebApplication.sln
 
-      - name: ReportGenerator
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
-        with:
-          reports: 'coverage/cobertura.xml'
-          targetdir: 'coverage-report'
-          reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
+      # - name: ReportGenerator
+      #   uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
+      #   with:
+      #     reports: 'coverage/cobertura.xml'
+      #     targetdir: 'coverage-report'
+      #     reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
       
       # Publish quality profile and analysis report on SonarQube Dashboard
       - name: SonarQube End
