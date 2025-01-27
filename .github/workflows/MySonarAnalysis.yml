@@ -61,6 +61,13 @@ jobs:
           shell: powershell
         run: |
            msbuild.exe MyWebApplication.sln
+
+      - name: ReportGenerator
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
+        with:
+          reports: 'coverage/cobertura.xml'
+          targetdir: 'coverage-report'
+          reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
       
       # Publish quality profile and analysis report on SonarQube Dashboard
       - name: SonarQube End
@@ -76,31 +83,3 @@ jobs:
         with:
           name: MyWebApplication
           path: "./_build"
-  
-  # This is Deploy job
-  # deploy:
-  #   # Select the runner on which you have to run the pipeline
-  #   runs-on: self-hosted
-  #   needs: build
-  #   environment:
-  #     name: 'Production'
-  #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-  #   steps:
-  #     # Download the Artifact which was uploaded in build pipeline
-  #     - name: Download artifact from build job
-  #       uses: actions/download-artifact@v1.0.0
-  #       with:
-  #         # Use the Name of the Application
-  #         name: MyWebApplication
-
-  #     # Deploy Application to Azure App service
-  #     - name: Deploy to Azure Web App
-  #       id: deploy-to-webapp
-  #       uses: azure/webapps-deploy@v2
-  #       with:
-  #         # mention the azure app name
-  #         app-name: 'GitHubApplication'
-  #         slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7ECCBD2FDD7E49A2979F0315A248BE13 }}
-          package: .
