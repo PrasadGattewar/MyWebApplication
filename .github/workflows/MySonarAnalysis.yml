@@ -42,11 +42,11 @@ jobs:
         run: nuget restore MyWebApplication.sln
 
       # Begin the SonarQube Analysis
-      # - name: SonarQube Begin
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     D:\SonarCloud\SonarScanner\SonarScanner.MSBuild.exe begin /k:"MyWebApplication" /n:"MyWebApplication" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
+      - name: SonarQube Begin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          D:\SonarCloud\SonarScanner\SonarScanner.MSBuild.exe begin /k:"MyWebApplication" /n:"MyWebApplication" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
 
       # Build the normal solution
       - name: Build Solution
@@ -54,21 +54,21 @@ jobs:
           msbuild.exe MyWebApplication.sln /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release" /p:PublishUrl="../_build"
 
       # Build the Solution using the MSBuild for SonarQube Analysis
-      # - name: ReBuild Solution
-      #   env:
-      #     # GITHUB_TOKEN is pre-defined variable
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     shell: powershell
-      #   run: |
-      #      msbuild.exe MyWebApplication.sln
+      - name: ReBuild Solution
+        env:
+          # GITHUB_TOKEN is pre-defined variable
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          shell: powershell
+        run: |
+           msbuild.exe MyWebApplication.sln
       
       # Publish quality profile and analysis report on SonarQube Dashboard
-      # - name: SonarQube End
-      #   env:
-      #     # GITHUB_TOKEN is pre-defined variable
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     D:\SonarCloud\SonarScanner\SonarScanner.MSBuild.exe end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      - name: SonarQube End
+        env:
+          # GITHUB_TOKEN is pre-defined variable
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          D:\SonarCloud\SonarScanner\SonarScanner.MSBuild.exe end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
       
       # Upload the artifact
       - name: Upload artifact
