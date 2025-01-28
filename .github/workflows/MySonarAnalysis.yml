@@ -56,7 +56,7 @@ jobs:
       # Run the test cases
       - name: Run tests
         run: |
-          & "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" "MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll"
+          & "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" "MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll" --collect:"Code Coverage"
         working-directory: ${{ github.workspace }}/
         env:
           VSTEST_RUNNER: 'true'
@@ -70,12 +70,12 @@ jobs:
         run: |
            msbuild.exe MyWebApplication.sln
 
-      # - name: ReportGenerator
-      #   uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
-      #   with:
-      #     reports: 'coverage/cobertura.xml'
-      #     targetdir: 'coverage-report'
-      #     reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
+      - name: Generate Coverage Report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
+        with:
+          reports: '**/TestResults/**/*.coverage'
+          targetdir: './coverage-report'
+          reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
       
       # Publish quality profile and analysis report on SonarQube Dashboard
       - name: SonarQube End
