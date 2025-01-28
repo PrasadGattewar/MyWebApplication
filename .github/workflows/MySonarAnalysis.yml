@@ -73,9 +73,9 @@ jobs:
       - name: test coverage
         shell: cmd
         run: |
-          ${{ env.opencover }} -output:"opencover.xml" -register:user -target:"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" -targetargs:"MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll"
-        env:
-          opencover: 'D:\SonarQube 8.9\opencover.4.6.519\OpenCover.Console.exe'
+          D:\SonarQube 8.9\opencover.4.6.519\OpenCover.Console.exe -output:"opencover.xml" -register:user -target:"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" -targetargs:"MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll"
+        # env:
+        #   opencover: 'D:\SonarQube 8.9\opencover.4.6.519\OpenCover.Console.exe'
       
       # Publish quality profile and analysis report on SonarQube Dashboard
       - name: SonarQube End
