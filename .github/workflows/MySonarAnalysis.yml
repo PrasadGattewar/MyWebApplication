@@ -31,6 +31,12 @@ jobs:
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
+      # Setup vstest action
+      - name: vstest-action
+        uses: microsoft/vstest-action@v1.0.0
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
       # Install the Nuget Package
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2.0.0
@@ -53,6 +59,7 @@ jobs:
         run: |
           msbuild.exe MyWebApplication.sln /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release" /p:PublishUrl="../_build"
 
+      # Run the test cases
       - name: Run tests
         run: |
           C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe MyWebApplication.Tests\bin\Release\MyWebApplication.dll
