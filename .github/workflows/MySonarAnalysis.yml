@@ -56,8 +56,8 @@ jobs:
       # Run the test cases
       - name: Run tests
         run: |
-          & "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" "\bin\Release\MyWebApplication.Tests.dll"
-        working-directory: ${{ github.workspace }}/MyWebApplication.Tests
+          & "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" "MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll"
+        working-directory: ${{ github.workspace }}/
         env:
           VSTEST_RUNNER: 'true'
         
