@@ -46,7 +46,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          D:\SonarCloud\SonarScanner\SonarScanner.MSBuild.exe begin /k:"MyWebApplication" /n:"MyWebApplication" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
+          D:\SonarCloud\SonarScanner\SonarScanner.MSBuild.exe begin /k:"MyWebApplication" /n:"MyWebApplication" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.cs.opencover.reportsPaths="%CD%\opencover.xml"
 
       # Build the normal solution
       - name: Build Solution
@@ -56,7 +56,7 @@ jobs:
       # Run the test cases
       - name: Run tests
         run: |
-          & "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" "MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll" --collect:"XPlat Code Coverage" --resultsDirectory:"TestResults"
+          & "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" "MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll" --collect:"Code Coverage" --resultsDirectory:"TestResults"
         working-directory: ${{ github.workspace }}/
         env:
           VSTEST_RUNNER: 'true'
@@ -70,12 +70,12 @@ jobs:
         run: |
            msbuild.exe MyWebApplication.sln
 
-      - name: Generate Coverage Report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
-        with:
-          reports: 'TestResults/**/coverage.cobertura.xml'
-          targetdir: './coverage-report'
-          reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
+      - name: test coverage
+        shell: cmd
+        run: |
+          ${{ env.opencover }} -output:"opencover.xml" -register:user -target:"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" -targetargs:"MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll"
+        env:
+          opencover: 'D:\SonarQube 8.9\opencover.4.6.519\OpenCover.Console.exe'
       
       # Publish quality profile and analysis report on SonarQube Dashboard
       - name: SonarQube End
