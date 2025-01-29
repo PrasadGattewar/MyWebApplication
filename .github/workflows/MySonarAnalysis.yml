@@ -88,10 +88,10 @@ jobs:
             exit 1
           }
       
-          $coverage = Select-String -Path "opencover.xml" -Pattern 'sequenceCoverage' | ForEach-Object {
-            ($_ -match 'sequenceCoverage="([^"]+)"') | Out-Null
-            $matches[1]
-          }
+           $coverage = Select-String -Path "opencover.xml" -Pattern 'sequenceCoverage' | ForEach-Object {
+              ($_ -match 'sequenceCoverage="(\d+(\.\d+)?)"') | Out-Null
+              $matches[1]
+            }
       
           if (-not $coverage) {
             Write-Error "Failed to extract coverage percentage!"
