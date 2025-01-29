@@ -81,7 +81,7 @@ jobs:
       - name: Extract Code Coverage Percentage
         id: coverage
         working-directory: ${{ github.workspace }}
-        shell: pwsh
+        shell: powershell
         run: |
           if (!(Test-Path "opencover.xml")) {
             Write-Error "Coverage file not found!"
