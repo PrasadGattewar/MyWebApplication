@@ -56,7 +56,7 @@ jobs:
       # Run the test cases
       - name: Run tests
         run: |
-          & "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" "MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll" --collect:"Code Coverage" --resultsDirectory:"TestResults"
+          & "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" "MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll" --collect:"Code Coverage"
         working-directory: ${{ github.workspace }}/
         env:
           VSTEST_RUNNER: 'true'
@@ -70,13 +70,31 @@ jobs:
         run: |
            msbuild.exe MyWebApplication.sln
 
-      - name: test coverage
+      # Generate OpenCover File
+      - name: Generate Opencover File
         shell: cmd
         run: |
           "D:\SonarQube 9.9\opencover.4.7.1221\OpenCover.Console.exe" -output:"opencover.xml" -register:user -target:"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" -targetargs:"MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll"
         working-directory: ${{ github.workspace }}/
-        # env:
-        #   opencover: 'D:\SonarQube 8.9\opencover.4.6.519\OpenCover.Console.exe'
+
+      # Extract Code Coverage Percentage
+      - name: Extract Code Coverage Percentage
+        id: coverage
+        shell: cmd
+        run: |
+          if not exist "opencover.xml" (
+            echo Coverage file not found!
+            exit /b 1
+          )
+          for /f "tokens=2 delims='\"'" %%A in ('findstr sequenceCoverage opencover.xml') do set "COVERAGE=%%A"
+          echo Extracted Code Coverage: %COVERAGE%%
+          echo percentage=%COVERAGE% >> %GITHUB_ENV%
+
+      # # Display Code Coverage
+      # - name: Display Code Coverage
+      # 	shell: cmd
+      # 	run: |
+      #    echo Code Coverage is %percentage%%
       
       # Publish quality profile and analysis report on SonarQube Dashboard
       - name: SonarQube End
