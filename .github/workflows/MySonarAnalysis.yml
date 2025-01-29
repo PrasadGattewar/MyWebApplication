@@ -81,9 +81,9 @@ jobs:
       - name: Extract Code Coverage Percentage
         id: coverage
         working-directory: ${{ github.workspace }}
-        shell: cmd
+        shell: pwsh
         run: |
-          dir
+          Get-ChildItem
           # if not exist "opencover.xml" (
           #   echo Coverage file not found!
           #   exit /b 1
