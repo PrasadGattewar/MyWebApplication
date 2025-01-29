@@ -88,10 +88,11 @@ jobs:
             exit 1
           }
       
-           $coverage = Select-String -Path "opencover.xml" -Pattern 'sequenceCoverage' | ForEach-Object {
-              ($_ -match 'sequenceCoverage="(\d+(\.\d+)?)"') | Out-Null
-              $matches[1]
-            }
+          # Extract only the first numeric coverage value
+          $coverage = Select-String -Path "opencover.xml" -Pattern 'sequenceCoverage' | ForEach-Object {
+            ($_ -match 'sequenceCoverage="(\d+(\.\d+)?)"') | Out-Null
+            $matches[1]
+          } | Select-Object -First 1
       
           if (-not $coverage) {
             Write-Error "Failed to extract coverage percentage!"
@@ -100,8 +101,8 @@ jobs:
       
           Write-Host "Extracted Code Coverage: $coverage"
           echo "percentage=$coverage" >> $env:GITHUB_ENV
-
-      # Display Code Coverage Percentage
+      
+      # Display Code Coverage
       - name: Display Code Coverage
         shell: cmd
         run: echo Code Coverage is %percentage%%
