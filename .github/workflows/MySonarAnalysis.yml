@@ -77,29 +77,41 @@ jobs:
           "D:\SonarQube 9.9\opencover.4.7.1221\OpenCover.Console.exe" -output:"opencover.xml" -register:user -target:"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" -targetargs:"MyWebApplication.Tests\bin\Release\MyWebApplication.Tests.dll"
         working-directory: ${{ github.workspace }}/
 
-      # Extract Code Coverage Percentage
+      # # Extract Code Coverage Percentage
+      # - name: Extract Code Coverage Percentage
+      #   id: coverage
+      #   working-directory: ${{ github.workspace }}
+      #   shell: powershell
+      #   run: |
+      #     if (!(Test-Path "opencover.xml")) {
+      #       Write-Error "Coverage file not found!"
+      #       exit 1
+      #     }
+      
+      #     $coverage = Select-String -Path "opencover.xml" -Pattern 'sequenceCoverage' | ForEach-Object {
+      #       ($_ -match 'sequenceCoverage="([^"]+)"') | Out-Null
+      #       $matches[1]
+      #     }
+      
+      #     if (-not $coverage) {
+      #       Write-Error "Failed to extract coverage percentage!"
+      #       exit 1
+      #     }
+      
+      #     Write-Host "Extracted Code Coverage: $coverage"
+      #     echo "percentage=$coverage" >> $env:GITHUB_ENV
+
       - name: Extract Code Coverage Percentage
         id: coverage
-        working-directory: ${{ github.workspace }}
         shell: powershell
         run: |
-          if (!(Test-Path "opencover.xml")) {
-            Write-Error "Coverage file not found!"
-            exit 1
-          }
-      
-          $coverage = Select-String -Path "opencover.xml" -Pattern 'sequenceCoverage' | ForEach-Object {
-            ($_ -match 'sequenceCoverage="([^"]+)"') | Out-Null
-            $matches[1]
-          }
-      
-          if (-not $coverage) {
-            Write-Error "Failed to extract coverage percentage!"
-            exit 1
-          }
-      
-          Write-Host "Extracted Code Coverage: $coverage"
-          echo "percentage=$coverage" >> $env:GITHUB_ENV
+          if not exist "opencover.xml" (
+            echo Coverage file not found!
+            exit /b 1
+          )
+          for /f "tokens=2 delims='\"'" %%A in ('findstr sequenceCoverage opencover.xml') do set "COVERAGE=%%A"
+          echo Extracted Code Coverage: %COVERAGE%%
+          echo percentage=%COVERAGE% >> %GITHUB_ENV%
 
       # # Display Code Coverage
       # - name: Display Code Coverage
