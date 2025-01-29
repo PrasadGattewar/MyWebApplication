@@ -83,14 +83,23 @@ jobs:
         working-directory: ${{ github.workspace }}
         shell: pwsh
         run: |
-          Get-ChildItem
-          # if not exist "opencover.xml" (
-          #   echo Coverage file not found!
-          #   exit /b 1
-          # )
-          # for /f "tokens=2 delims='\"'" %%A in ('findstr sequenceCoverage opencover.xml') do set "COVERAGE=%%A"
-          # echo Extracted Code Coverage: %COVERAGE%%
-          # echo percentage=%COVERAGE% >> %GITHUB_ENV%
+          if (!(Test-Path "opencover.xml")) {
+            Write-Error "Coverage file not found!"
+            exit 1
+          }
+      
+          $coverage = Select-String -Path "opencover.xml" -Pattern 'sequenceCoverage' | ForEach-Object {
+            ($_ -match 'sequenceCoverage="([^"]+)"') | Out-Null
+            $matches[1]
+          }
+      
+          if (-not $coverage) {
+            Write-Error "Failed to extract coverage percentage!"
+            exit 1
+          }
+      
+          Write-Host "Extracted Code Coverage: $coverage"
+          echo "percentage=$coverage" >> $env:GITHUB_ENV
 
       # # Display Code Coverage
       # - name: Display Code Coverage
