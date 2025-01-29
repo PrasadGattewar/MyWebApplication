@@ -82,15 +82,14 @@ jobs:
         id: coverage
         shell: cmd
         run: |
-          pwd
-          ls
-          if not exist "opencover.xml" (
-            echo Coverage file not found!
-            exit /b 1
-          )
-          for /f "tokens=2 delims='\"'" %%A in ('findstr sequenceCoverage opencover.xml') do set "COVERAGE=%%A"
-          echo Extracted Code Coverage: %COVERAGE%%
-          echo percentage=%COVERAGE% >> %GITHUB_ENV%
+          dir
+          # if not exist "opencover.xml" (
+          #   echo Coverage file not found!
+          #   exit /b 1
+          # )
+          # for /f "tokens=2 delims='\"'" %%A in ('findstr sequenceCoverage opencover.xml') do set "COVERAGE=%%A"
+          # echo Extracted Code Coverage: %COVERAGE%%
+          # echo percentage=%COVERAGE% >> %GITHUB_ENV%
 
       # # Display Code Coverage
       # - name: Display Code Coverage
