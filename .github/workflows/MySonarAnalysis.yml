@@ -80,8 +80,8 @@ jobs:
       # Extract Code Coverage Percentage
       - name: Extract Code Coverage Percentage
         id: coverage
+        working-directory: ${{ github.workspace }}
         shell: cmd
-        working-directory: ${{ github.workspace }}/
         run: |
           dir
           # if not exist "opencover.xml" (
