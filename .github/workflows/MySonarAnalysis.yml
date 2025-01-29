@@ -106,6 +106,17 @@ jobs:
       - name: Display Code Coverage
         shell: cmd
         run: echo Code Coverage is %percentage%%
+
+      # Verify Coverage Threshold
+      - name: Verify Coverage Threshold
+        shell: cmd
+        run: |
+          if %percentage% LSS 80 (
+            echo Coverage %percentage%%% is below the threshold (80%).
+            exit /b 1
+          ) else (
+            echo Coverage %percentage%%% meets the threshold (80% or higher).
+          )
       
       # Publish quality profile and analysis report on SonarQube Dashboard
       - name: SonarQube End
