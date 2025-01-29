@@ -82,9 +82,10 @@ jobs:
         id: coverage
         shell: cmd
         run: |
+          pwd
+          ls
           if not exist "opencover.xml" (
             echo Coverage file not found!
-            echo pwd
             exit /b 1
           )
           for /f "tokens=2 delims='\"'" %%A in ('findstr sequenceCoverage opencover.xml') do set "COVERAGE=%%A"
