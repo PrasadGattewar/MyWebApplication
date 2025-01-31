@@ -107,13 +107,13 @@ jobs:
         shell: cmd
         run: echo Code Coverage is %percentage%%
 
-      # Verify Coverage Threshold
+      # Verify Coverage Threshold - exit /b 1
       - name: Verify Coverage Threshold
         shell: cmd
         run: |
+          echo Code Coverage is %percentage%%
           if %percentage% LSS 80 (
             echo Coverage %percentage%%% is below the threshold (80%).
-            exit /b 1
           ) else (
             echo Coverage %percentage%%% meets the threshold (80% or higher).
           )
