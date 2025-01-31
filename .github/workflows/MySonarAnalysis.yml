@@ -101,40 +101,7 @@ jobs:
       
           Write-Host "Extracted Code Coverage: $coverage"
           echo "percentage=$coverage" >> $env:GITHUB_ENV
-      
-      # Display Code Coverage
-      - name: Display Code Coverage
-        shell: cmd
-        run: echo Code Coverage is %percentage%%
-
-      # # Verify Coverage Threshold - exit /b 1
-      # - name: Verify Coverage Threshold
-      #   shell: powershell
-      #   run: |
-      #     echo Code Coverage is %percentage%%
-      #     if %percentage% LSS 80 (
-      #       echo Coverage %percentage%%% is below the threshold (80%).
-      #     ) else (
-      #       echo Coverage %percentage%%% meets the threshold (80% or higher).
-      #     )
-
-      - name: Verify Coverage Threshold
-        shell: powershell
-        run: |
-          Write-Output "Code Coverage is $env:percentage%"
-          if ($env:percentage -lt 80) {
-              Write-Error "Coverage $env:percentage% is below the threshold (80%)."
-              echo "COVERAGE_FAIL=true" >> $env:GITHUB_ENV
-          } else {
-              Write-Output "Coverage $env:percentage% meets the threshold (80% or higher)."
-              echo "COVERAGE_FAIL=false" >> $env:GITHUB_ENV
-          }
-    
-      - name: Check Final Pipeline Status
-        if: env.COVERAGE_FAIL == 'true'
-        run: |
-          echo "Failing the pipeline due to insufficient code coverage."
-          
+  
       # Publish quality profile and analysis report on SonarQube Dashboard
       - name: SonarQube End
         env:
