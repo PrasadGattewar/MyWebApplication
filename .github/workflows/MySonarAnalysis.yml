@@ -124,10 +124,16 @@ jobs:
           Write-Output "Code Coverage is $env:percentage%"
           if ($env:percentage -lt 80) {
               Write-Error "Coverage $env:percentage% is below the threshold (80%)."
-              exit 1
+              echo "COVERAGE_FAIL=true" >> $env:GITHUB_ENV
           } else {
               Write-Output "Coverage $env:percentage% meets the threshold (80% or higher)."
+              echo "COVERAGE_FAIL=false" >> $env:GITHUB_ENV
           }
+    
+      - name: Check Final Pipeline Status
+        if: env.COVERAGE_FAIL == 'true'
+        run: |
+          echo "Failing the pipeline due to insufficient code coverage."
           
       # Publish quality profile and analysis report on SonarQube Dashboard
       - name: SonarQube End
