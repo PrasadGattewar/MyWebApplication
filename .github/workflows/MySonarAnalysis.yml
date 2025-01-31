@@ -101,7 +101,24 @@ jobs:
       
           Write-Host "Extracted Code Coverage: $coverage"
           echo "percentage=$coverage" >> $env:GITHUB_ENV
-  
+
+      # Varify the coverage
+      - name: Verify coverage with condition
+        id: coveragePercentage
+        working-directory: ${{ github.workspace }}
+        shell: powershell
+        run: |
+          # Retrieve the coverage percentage from the previous step
+          $coverage = ${{ steps.coverage.outputs.percentage }}
+      
+          Write-Host "Code Coverage is $coverage%"
+          if ($coverage -lt 80) {
+            Write-Error "Coverage $coverage% is below the threshold (80%)."
+          } else {
+            Write-Host "Coverage $coverage% meets the threshold (80% or higher)."
+            exit 1
+          }
+        
       # Publish quality profile and analysis report on SonarQube Dashboard
       - name: SonarQube End
         env:
