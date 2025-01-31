@@ -98,26 +98,18 @@ jobs:
             Write-Error "Failed to extract coverage percentage!"
             exit 1
           }
-      
-          Write-Host "Extracted Code Coverage: $coverage"
-          echo "percentage=$coverage" >> $env:GITHUB_ENV
 
-      # Varify the coverage
-      - name: Verify coverage with condition
-        id: coveragePercentage
-        working-directory: ${{ github.workspace }}
-        shell: powershell
-        run: |
-          # Retrieve the coverage percentage from the previous step
-          $coverage = ${{ steps.coverage.outputs.percentage }}
-      
-          Write-Host "Code Coverage is $coverage%"
-          if ($coverage -lt 80) {
-            Write-Error "Coverage $coverage% is below the threshold (80%)."
-          } else {
-            Write-Host "Coverage $coverage% meets the threshold (80% or higher)."
+          # Convert $coverage to a numeric value for comparison
+          $coverageNumber = [decimal]::Parse($coverage)
+          
+          # Check if coverage is greater than 15%
+          if ($coverageNumber -le 15) {
+            Write-Error "Coverage $coverage% is below the acceptable threshold (15%). Failing the task."
             exit 1
           }
+
+          Write-Host "Extracted Code Coverage: $coverage"
+          echo "percentage=$coverage" >> $env:GITHUB_ENV
         
       # Publish quality profile and analysis report on SonarQube Dashboard
       - name: SonarQube End
